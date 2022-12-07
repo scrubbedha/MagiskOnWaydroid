@@ -36,6 +36,11 @@ on:
         - beta
         - canary
         - delta
+        - specify
+      magisk_apk_url:
+        description: "Specifify Magisk APK manually"
+        required: false
+        type: string
       gapps_variant:
         description: "Variants of gapps"
         required: true
@@ -224,7 +229,8 @@ jobs:
               magisk_apk = json.loads(requests.get(f"https://github.com/topjohnwu/magisk-files/raw/master/{magisk_apk}.json").content)['magisk']['link']
           if magisk_apk == "delta":
               magisk_apk = json.loads(requests.get(f"https://github.com/HuskyDG/magisk-files/raw/main/stable.json").content)['magisk']['link']
-
+          if magisk_apk == "specify":
+              magisk_apk == magisk_apk_url
           
 
           out_file = "magisk.zip"
