@@ -11,7 +11,7 @@ on:
       arch:
         description: "Build arch"
         required: true
-        default: "x64"
+        default: "arm64"
         type: choice
         options:
         - x64
@@ -26,7 +26,7 @@ on:
       magisk_apk:
         description: "Magisk version"
         required: true
-        default: "24.3"
+        default: "delta"
         type: choice
         options:
         - 24.1
@@ -35,6 +35,7 @@ on:
         - stable
         - beta
         - canary
+        - delta
       gapps_variant:
         description: "Variants of gapps"
         required: true
@@ -93,7 +94,7 @@ jobs:
             let magisk_apk = "${{ github.event.inputs.magisk_apk }}"
             switch ( magisk_apk ) {
               default:
-                matrix.magisk_apk = ["stable"];
+                matrix.magisk_apk = ["delta"];
                 break;
             }
             let gapps_variant = "${{ github.event.inputs.gapps_variant }}"
@@ -221,6 +222,9 @@ jobs:
               magisk_apk = "https://github.com/topjohnwu/Magisk/releases/download/v24.3/Magisk-v24.3.apk"
           if magisk_apk == "stable" or magisk_apk == "beta" or magisk_apk == "canary":
               magisk_apk = json.loads(requests.get(f"https://github.com/topjohnwu/magisk-files/raw/master/{magisk_apk}.json").content)['magisk']['link']
+          if magisk_apk == "delta":
+              magisk_apk = json.loads(requests.get(f"https://github.com/HuskyDG/magisk-files/raw/main/stable.json").content)['magisk']['link']
+
           
 
           out_file = "magisk.zip"
