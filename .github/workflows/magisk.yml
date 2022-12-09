@@ -306,8 +306,8 @@ jobs:
       - name: Replace system and vendor
         run: |
           rm -rf ${{ matrix.arch }}/{system,vendor}.img
-          wget -q https://sourceforge.net/projects/blissos-dev/files/waydroid/lineage/lineage-18.1/Lineage-OS-18.1-waydroid_x86_64-202111291420-foss-sd-hd-ex_ax86-vaapi_gles-aep.zip/download -O los.zip
-          7z x los.zip -o${{ matrix.arch }}/
+          wget -q https://github.com/UbuntuTouch-vayu/waydroid_11/releases/download/1.0/system.img -O ${{ matrix.arch }}/system.img
+          wget -q https://github.com/UbuntuTouch-vayu/waydroid_11/releases/download/1.0/vendor.img -O ${{ matrix.arch }}/vendor.img
       - name: Extract GApps and expand images
         if: ${{ matrix.gapps_variant != 'none' && matrix.gapps_variant != '' }}
         run: |
