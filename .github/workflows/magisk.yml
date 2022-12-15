@@ -236,8 +236,8 @@ jobs:
       - name: Replace system and vendor
         run: |
           rm -rf ${{ matrix.arch }}/{system,vendor}.img
-          wget -q https://sourceforge.net/projects/waydroid/files/images/system/lineage/waydroid_arm64/lineage-18.1-20221210-VANILLA-waydroid_arm64-system.zip/download -O system.zip
-          wget -q https://sourceforge.net/projects/waydroid/files/images/vendor/waydroid_arm64/lineage-18.1-20221210-MAINLINE-waydroid_arm64-vendor.zip/download -O vendor.zip
+          wget -q https://sourceforge.net/projects/waydroid/files/images/system/lineage/waydroid_arm64/lineage-18.1-20221111-VANILLA-waydroid_arm64-system.zip/download -O system.zip
+          wget -q https://sourceforge.net/projects/waydroid/files/images/vendor/waydroid_arm64/lineage-18.1-20221110-MAINLINE-waydroid_arm64-vendor.zip/download -O vendor.zip
           7z x system.zip -o${{ matrix.arch }}/
           7z x vendor.zip -o${{ matrix.arch }}/
       - name: Resize system image
