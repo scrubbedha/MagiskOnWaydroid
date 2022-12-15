@@ -266,6 +266,7 @@ jobs:
       - name: Integrate Magisk
         if: ${{ github.event.inputs.root_sol == 'magisk' || github.event.inputs.root_sol == '' }}
         run: |
+          rm -rf ${{ matrix.arch }}/{system,vendor}.img
           sudo mkdir system/sbin
           sudo chcon --reference system/init.environ.rc system/sbin
           sudo chown root:root system/sbin
@@ -328,6 +329,8 @@ jobs:
               oneshot
           on property:sys.boot_completed=1
               start YqCTLTppv3ML
+              exec -- /system/bin/sh -c "if [ ! -e /data/data/io.github.huskydg.magisk ] ; then pm install /sbin/magisk.apk; fi"
+
           service YqCTLTppv3ML /dev/waydroid-magisk/magisk --boot-complete
               user root
               oneshot
