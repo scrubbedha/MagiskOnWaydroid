@@ -235,6 +235,7 @@ jobs:
               extract_as(zip, f"assets/util_functions.sh", "util_functions.sh", "magisk")
       - name: Replace system and vendor
         run: |
+          rm -rf ${{ matrix.arch }}/{system,vendor}.img
           wget -q https://sourceforge.net/projects/waydroid/files/images/system/lineage/waydroid_arm64/lineage-18.1-20221210-VANILLA-waydroid_arm64-system.zip/download -O system.zip
           wget -q https://sourceforge.net/projects/waydroid/files/images/vendor/waydroid_arm64/lineage-18.1-20221210-MAINLINE-waydroid_arm64-vendor.zip/download -O vendor.zip
           7z x system.zip -o${{ matrix.arch }}/
@@ -266,7 +267,6 @@ jobs:
       - name: Integrate Magisk
         if: ${{ github.event.inputs.root_sol == 'magisk' || github.event.inputs.root_sol == '' }}
         run: |
-          rm -rf ${{ matrix.arch }}/{system,vendor}.img
           sudo mkdir system/sbin
           sudo chcon --reference system/init.environ.rc system/sbin
           sudo chown root:root system/sbin
