@@ -18,7 +18,7 @@ on:
       magisk_apk:
         description: "Magisk version"
         required: true
-        default: "canary"
+        default: "delta"
         type: choice
         options:
         - 24.1
@@ -267,39 +267,6 @@ jobs:
       - name: Integrate Magisk
         if: ${{ github.event.inputs.root_sol == 'magisk' || github.event.inputs.root_sol == '' }}
         run: |
-          sudo mkdir system/sbin
-          sudo chcon --reference system/init.environ.rc system/sbin
-          sudo chown root:root system/sbin
-          sudo chmod 0700 system/sbin
-          sudo cp magisk/* system/sbin/
-          sudo mkdir -p userdata/adb/magisk
-          sudo chmod -R 700 userdata/adb
-          sudo cp magisk/* userdata/adb/magisk/
-          sudo find userdata/adb/magisk -type f -exec chmod 0755 {} \;
-          sudo cp magisk.zip userdata/adb/magisk/magisk.apk
-          sudo tee -a system/sbin/loadpolicy.sh <<EOF
-          #!/system/bin/sh
-          restorecon -R /data/adb/magisk
-          for module in \$(ls /data/adb/modules); do
-              if ! [ -f "/data/adb/modules/\$module/disable" ] && [ -f "/data/adb/modules/\$module/sepolicy.rule" ]; then
-                  /sbin/magiskpolicy --live --apply "/data/adb/modules/\$module/sepolicy.rule"
-              fi
-          done
-          EOF
-          sudo find system/sbin -type f -exec chmod 0755 {} \;
-          sudo find system/sbin -type f -exec chown root:root {} \;
-          sudo find system/sbin -type f -exec chcon --reference system/product {} \;
-          # new since v24.3
-          sudo patchelf --replace-needed libc.so "${HOME}/libc.so" ./magiskpolicy || true
-          sudo patchelf --replace-needed libm.so "${HOME}/libm.so" ./magiskpolicy || true
-          sudo patchelf --replace-needed libdl.so "${HOME}/libdl.so" ./magiskpolicy || true
-          sudo patchelf --set-interpreter "${HOME}/linker64" ./magiskpolicy || true
-          # new since v24.3
-          chmod +x ./magiskpolicy
-          echo '/dev/magisk(/.*)?    u:object_r:magisk_file:s0' | sudo tee -a system/vendor/etc/selinux/vendor_file_contexts
-          echo '/data/adb/magisk(/.*)?   u:object_r:magisk_file:s0' | sudo tee -a system/vendor/etc/selinux/vendor_file_contexts
-          echo '/system/bin/strace u:object_r:zygote_socket:s0' | sudo tee -a system/vendor/etc/selinux/vendor_file_contexts
-          sudo ./magiskpolicy --load system/vendor/etc/selinux/precompiled_sepolicy --save system/vendor/etc/selinux/precompiled_sepolicy --magisk "allow * magisk_file lnk_file *"
           sudo tee -a system/system/etc/init/hw/init.rc <<EOF
           on post-fs-data
               mkdir /dev/waydroid-magisk
@@ -320,13 +287,16 @@ jobs:
               mkdir /dev/waydroid-magisk/.magisk/block 700
               mount none /data /dev/waydroid-magisk/.magisk/mirror/data bind rec
               start FAhW7H9G5sf
+
           service FAhW7H9G5sf /dev/waydroid-magisk/magisk --post-fs-data
               user root
               oneshot
+
           service HLiFsR1HtIXVN6 /dev/waydroid-magisk/magisk --service
               class late_start
               user root
               oneshot
+
           on property:sys.boot_completed=1
               start YqCTLTppv3ML
               exec -- /system/bin/sh -c "if [ ! -e /data/data/io.github.huskydg.magisk ] ; then pm install /sbin/magisk.apk; fi"
